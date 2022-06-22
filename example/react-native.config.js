@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   dependencies: {
-    'reactnativeunicorn': {
+    'react-native-unicorn': {
       root: path.join(__dirname, '..'),
     },
   },

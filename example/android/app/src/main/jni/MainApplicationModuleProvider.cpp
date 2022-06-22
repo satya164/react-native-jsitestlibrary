@@ -1,6 +1,7 @@
 #include "MainApplicationModuleProvider.h"
 
 #include <rncore.h>
+#include <unicorn.h>
 
 namespace facebook {
 namespace react {
@@ -17,6 +18,13 @@ std::shared_ptr<TurboModule> MainApplicationModuleProvider(
   //    return module;
   // }
   // return rncore_ModuleProvider(moduleName, params);
+
+  auto module = unicorn_ModuleProvider(moduleName, params);
+
+  if (module != nullptr) {
+      return module;
+  }
+
   return rncore_ModuleProvider(moduleName, params);
 }
 

@@ -12,8 +12,15 @@ buildscript {
   }
 }
 
+def isNewArchitectureEnabled() {
+  return rootProject.hasProperty("newArchEnabled") &&  rootProject.getProperty("newArchEnabled") == "true"
+}
+
 apply plugin: 'com.android.library'
 
+if (isNewArchitectureEnabled()) {
+  apply plugin: 'com.facebook.react'
+}
 
 def getExtOrDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['Unicorn_' + name]
@@ -30,9 +37,7 @@ android {
   defaultConfig {
     minSdkVersion getExtOrIntegerDefault('minSdkVersion')
     targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
-      versionCode 1
-      versionName "1.0"
-
+    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
   }
 
   buildTypes {
@@ -40,12 +45,24 @@ android {
       minifyEnabled false
     }
   }
+
   lintOptions {
     disable 'GradleCompatible'
   }
+
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  sourceSets {
+    main {
+      if (isNewArchitectureEnabled()) {
+          java.srcDirs += ['src/newarch']
+      } else {
+          java.srcDirs += ['src/oldarch']
+      }
+    }
   }
 }
 
@@ -125,4 +142,12 @@ dependencies {
     //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 // From node_modules
+}
+
+if (isNewArchitectureEnabled()) {
+  react {
+    jsRootDir = file("../src/")
+    libraryName = "unicorn"
+    codegenJavaPackageName = "com.reactnativeunicorn"
+  }
 }

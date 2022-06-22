@@ -6,8 +6,15 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo managed workflow\n';
 
-const Unicorn = NativeModules.Unicorn
-  ? NativeModules.Unicorn
+// @ts-expect-error
+const isTurboModuleEnabled = global.__turboModuleProxy != null;
+
+const UnicornModule = isTurboModuleEnabled
+  ? require('./NativeUnicorn').default
+  : NativeModules.Unicorn;
+
+const Unicorn = UnicornModule
+  ? UnicornModule
   : new Proxy(
       {},
       {
